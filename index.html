@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FlowPilot AI</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main id="app" class="app-shell">
+      <section id="entryScreen" class="entry-screen">
+        <div class="entry-topbar">
+          <div class="brand-mark" aria-label="FlowPilot AI">
+            <span class="brand-bolt"></span>
+            <span>FlowPilot AI</span>
+          </div>
+          <button class="ghost-button" type="button">가져오기</button>
+        </div>
+
+        <div class="entry-center">
+          <div class="eyebrow">AI FLOW DESIGN TOOL</div>
+          <h1>서비스 플로우를 말하면, 바로 설계됩니다.</h1>
+          <p class="entry-copy">자연어로 기능을 설명하면 AI가 플로우차트를 그리고, 빈틈과 인프라 리스크를 함께 점검합니다.</p>
+
+          <form id="initialForm" class="initial-prompt">
+            <textarea
+              id="initialInput"
+              rows="3"
+              placeholder="예: 병원 예약 서비스의 회원가입, 예약, 취소 플로우를 그려줘"
+            ></textarea>
+            <div class="prompt-footer">
+              <div class="prompt-hint">첫 입력으로 프로젝트가 생성됩니다</div>
+              <button class="primary-button" type="submit">생성</button>
+            </div>
+          </form>
+
+          <div class="example-row" aria-label="예시 프롬프트">
+            <button type="button" class="chip" data-prompt="B2B SaaS 회원가입부터 워크스페이스 생성, 팀 초대, 결제까지의 온보딩 플로우를 만들어줘.">SaaS 온보딩</button>
+            <button type="button" class="chip" data-prompt="결제 실패, 재시도, 고객센터 안내까지 포함한 예외 처리 플로우를 설계해줘.">결제 실패 예외</button>
+            <button type="button" class="chip" data-prompt="병원 예약 서비스의 회원가입, 본인인증, 진료 예약, 예약 변경과 취소 플로우를 그려줘.">병원 예약 시스템</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="workspaceScreen" class="workspace-screen hidden">
+        <header class="workspace-topbar">
+          <div>
+            <div class="brand-mark compact">
+              <span class="brand-bolt"></span>
+              <span>FlowPilot AI</span>
+            </div>
+            <h2 id="projectTitle">새 서비스 플로우</h2>
+          </div>
+          <div class="topbar-actions">
+            <span class="status-pill live"><span></span>AI 검토 중</span>
+            <button id="exportButton" class="outline-button" type="button">내보내기</button>
+          </div>
+        </header>
+
+        <div class="workspace-layout">
+          <section id="canvasPanel" class="canvas-panel">
+            <div class="canvas-toolbar" aria-label="캔버스 도구">
+              <button class="icon-button" type="button" title="확대">+</button>
+              <button class="icon-button" type="button" title="축소">-</button>
+              <button id="fitButton" class="tool-button" type="button">화면 맞춤</button>
+              <button id="impactButton" class="tool-button" type="button">영향도</button>
+              <button id="fullscreenButton" class="icon-button" type="button" title="전체 화면">⛶</button>
+            </div>
+
+            <div id="flowCanvas" class="flow-canvas" aria-label="서비스 플로우 캔버스">
+              <svg id="edgeLayer" class="edge-layer" viewBox="0 0 1200 620" preserveAspectRatio="xMidYMid meet"></svg>
+              <div id="nodeLayer" class="node-layer"></div>
+              <aside id="impactOverlay" class="impact-overlay hidden">
+                <div class="panel-label">IMPACT ANALYSIS</div>
+                <h3>기능 추가 영향도</h3>
+                <ul>
+                  <li><strong>높음</strong> 권한 관리, 감사 로그</li>
+                  <li><strong>중간</strong> 알림 발송, 결제 소유자</li>
+                  <li><strong>낮음</strong> 사용자 목록 필터</li>
+                </ul>
+              </aside>
+            </div>
+
+            <div class="mini-map">
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+          </section>
+
+          <section id="copilotPanel" class="copilot-panel">
+            <div class="panel-resizer" aria-hidden="true"></div>
+            <nav class="copilot-tabs" aria-label="AI 패널 탭">
+              <button class="active" type="button">Chat</button>
+              <button type="button">Issues</button>
+              <button type="button">Infra</button>
+              <button type="button">Changes</button>
+            </nav>
+
+            <div id="messageList" class="message-list"></div>
+
+            <form id="chatForm" class="chat-input">
+              <textarea id="chatInput" rows="2" placeholder="/add 결제 실패 플로우 또는 자연어로 수정 요청"></textarea>
+              <button class="primary-button" type="submit">전송</button>
+            </form>
+          </section>
+        </div>
+      </section>
+
+      <dialog id="exportDialog" class="export-dialog">
+        <form method="dialog">
+          <div class="modal-head">
+            <div>
+              <div class="panel-label">EXPORT</div>
+              <h3>플로우 내보내기</h3>
+            </div>
+            <button class="icon-button" value="cancel" type="submit">×</button>
+          </div>
+          <div class="export-grid">
+            <label><input type="checkbox" checked /> 전체 플로우</label>
+            <label><input type="checkbox" checked /> AI 코멘트</label>
+            <label><input type="checkbox" checked /> 인프라 체크리스트</label>
+            <label><input type="checkbox" /> 변경 이력</label>
+          </div>
+          <div class="modal-actions">
+            <button class="outline-button" value="png" type="submit">PNG</button>
+            <button class="outline-button" value="json" type="submit">JSON</button>
+            <button class="primary-button" value="pdf" type="submit">PDF</button>
+          </div>
+        </form>
+      </dialog>
+    </main>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
