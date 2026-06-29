@@ -20,28 +20,59 @@ const state = {
   edges: [],
   draggingNodeId: null,
   dragOffset: { x: 0, y: 0 },
+  nodeIdCounter: 0,
 };
 
-const graphTemplate = {
+// 키워드 기반 플로우 템플릿 라이브러리
+const flowTemplates = {
+  "SaaS|온보딩|워크스페이스": {
+    title: "B2B SaaS 온보딩 플로우",
+    nodes: [
+      { type: "start", title: "회원가입 시작", copy: "새 계정 생성 요청", meta: "entry.start" },
+      { type: "action", title: "이메일 인증", copy: "인증 링크 발송 및 확인", meta: "auth.email_verify" },
+      { type: "action", title: "워크스페이스 생성", copy: "조직명 및 도메인 설정", meta: "workspace.create" },
+      { type: "action", title: "팀원 초대", copy: "역할 기반 초대 링크 생성", meta: "team.invite" },
+      { type: "decision", title: "결제 필수?", copy: "플랜 선택 필요 여부 확인", meta: "billing.required" },
+      { type: "risk", title: "결제 정보 등록", copy: "카드 등록 및 세금계산서 설정", meta: "billing.setup" },
+      { type: "infra", title: "SSO/감사로그 확인", copy: "엔터프라이즈 기능 체크리스트", meta: "infra.checklist" },
+      { type: "end", title: "대시보드 접속", copy: "첫 프로젝트 생성 준비 완료", meta: "flow.complete" },
+    ],
+  },
+  "병원|예약|진료": {
+    title: "병원 예약 시스템 플로우",
+    nodes: [
+      { type: "start", title: "앱 진입", copy: "사용자가 병원 예약 앱 실행", meta: "entry.start" },
+      { type: "action", title: "회원가입/로그인", copy: "휴대폰 본인인증 필수", meta: "auth.mobile_verify" },
+      { type: "decision", title: "의료진 선택", copy: "과목/의사 검색 및 선택", meta: "selection.doctor" },
+      { type: "action", title: "예약 일정 선택", copy: "가능한 시간대 표시 및 선택", meta: "booking.datetime" },
+      { type: "action", title: "사전 문진", copy: "증상 및 의료 이력 입력", meta: "form.questionnaire" },
+      { type: "action", title: "진료 비용 안내", copy: "예상 비용 및 결제 수단 안내", meta: "payment.estimate" },
+      { type: "end", title: "예약 완료", copy: "확인 메시지 및 알림 설정", meta: "flow.complete" },
+    ],
+  },
+  "결제|실패|재시도": {
+    title: "결제 실패 예외 처리 플로우",
+    nodes: [
+      { type: "start", title: "결제 시작", copy: "사용자가 결제 버튼 클릭", meta: "payment.start" },
+      { type: "action", title: "결제 처리", copy: "PG사에 결제 요청", meta: "payment.process" },
+      { type: "decision", title: "결제 성공?", copy: "결제 승인 여부 확인", meta: "payment.status" },
+      { type: "risk", title: "결제 실패 처리", copy: "오류 코드 분류 및 메시지 표시", meta: "error.handle" },
+      { type: "action", title: "재시도 안내", copy: "1회/24시간 자동 재시도 및 수동 재시도", meta: "payment.retry" },
+      { type: "action", title: "고객센터 연결", copy: "실패 원인 분석 및 상담사 배정", meta: "support.connect" },
+      { type: "end", title: "결제 완료", copy: "거래 증명서 발행", meta: "flow.complete" },
+    ],
+  },
+};
+
+// 기본 플로우 (템플릿 매칭 실패 시)
+const defaultFlow = {
+  title: "기본 서비스 플로우",
   nodes: [
-    { id: "start", type: "start", title: "가입 시작", copy: "사용자가 서비스 진입 후 계정 생성을 시작합니다.", x: 80, y: 110, meta: "entry.start" },
-    { id: "signup", type: "action", title: "이메일 회원가입", copy: "이메일, 비밀번호, 약관 동의를 수집합니다.", x: 300, y: 110, meta: "user.signup" },
-    { id: "verify", type: "decision", title: "이메일 인증 완료?", copy: "미인증 사용자는 재발송 또는 보류 상태로 이동합니다.", x: 520, y: 110, meta: "condition.email_verified" },
-    { id: "workspace", type: "action", title: "워크스페이스 생성", copy: "조직명, 도메인, 기본 권한을 설정합니다.", x: 740, y: 86, meta: "workspace.create" },
-    { id: "invite", type: "action", title: "팀원 초대", copy: "역할별 초대 링크와 만료 정책을 생성합니다.", x: 740, y: 235, meta: "team.invite" },
-    { id: "billing", type: "risk", title: "결제 정보 등록", copy: "카드 실패, 세금계산서, 관리자 승인 예외가 필요합니다.", x: 960, y: 160, meta: "billing.setup" },
-    { id: "infra", type: "infra", title: "인프라 체크", copy: "SSO, 감사 로그, 외부 메일 발송 정책을 확인합니다.", x: 520, y: 335, meta: "infra.checklist" },
-    { id: "end", type: "end", title: "온보딩 완료", copy: "사용자는 대시보드에서 첫 프로젝트를 생성할 수 있습니다.", x: 960, y: 350, meta: "flow.complete" },
-  ],
-  edges: [
-    { id: "e1", from: "start", to: "signup", status: "active" },
-    { id: "e2", from: "signup", to: "verify", status: "active" },
-    { id: "e3", from: "verify", to: "workspace", label: "yes", status: "active" },
-    { id: "e4", from: "workspace", to: "invite", status: "normal" },
-    { id: "e5", from: "invite", to: "billing", status: "warning" },
-    { id: "e6", from: "verify", to: "infra", label: "needs policy", status: "warning" },
-    { id: "e7", from: "billing", to: "end", status: "normal" },
-    { id: "e8", from: "infra", to: "end", status: "normal" },
+    { type: "start", title: "프로세스 시작", copy: "사용자 진입점", meta: "entry.start" },
+    { type: "action", title: "핵심 로직", copy: "주요 기능 실행", meta: "core.logic" },
+    { type: "decision", title: "조건 확인", copy: "분기점", meta: "condition.check" },
+    { type: "action", title: "완료 처리", copy: "결과 반영", meta: "completion" },
+    { type: "end", title: "프로세스 종료", copy: "사용자에게 결과 전달", meta: "flow.complete" },
   ],
 };
 
@@ -58,41 +89,109 @@ const aiMessages = [
   },
 ];
 
-function getPromptTitle(prompt) {
-  if (prompt.includes("병원")) return "병원 예약 서비스 플로우";
-  if (prompt.includes("결제")) return "결제 실패 예외 처리 플로우";
-  if (prompt.includes("SaaS") || prompt.includes("워크스페이스")) return "B2B SaaS 온보딩 플로우";
-  return "새 서비스 플로우";
+function matchTemplate(prompt) {
+  for (const [keywords, template] of Object.entries(flowTemplates)) {
+    const keywordList = keywords.split("|");
+    if (keywordList.some(kw => prompt.includes(kw))) {
+      return template;
+    }
+  }
+  return defaultFlow;
 }
 
 function startProject(prompt) {
   entryScreen.classList.add("hidden");
   workspaceScreen.classList.remove("hidden");
-  projectTitle.textContent = getPromptTitle(prompt);
+
+  const template = matchTemplate(prompt);
+  projectTitle.textContent = template.title;
   messageList.innerHTML = "";
+
   addMessage("user", "요청", `<p>${escapeHtml(prompt)}</p>`);
+  addMessage("ai", "AI 분석 중", `<p>🔄 플로우 생성 중...</p>`);
+
   state.nodes = [];
   state.edges = [];
-  renderGraphProgressively();
+  generateFlowFromTemplate(template, prompt);
 }
 
-function renderGraphProgressively() {
+function generateFlowFromTemplate(template, prompt) {
+  const nodes = template.nodes;
+  const nodeCount = nodes.length;
+  const baseX = 80;
+  const baseY = 110;
+  const spacingX = Math.max(200, 1000 / Math.max(1, nodeCount - 1));
+
   nodeLayer.innerHTML = "";
   edgeLayer.innerHTML = "";
 
-  graphTemplate.nodes.forEach((node, index) => {
+  nodes.forEach((nodeData, index) => {
     setTimeout(() => {
-      state.nodes.push({ ...node });
+      const nodeId = `node_${state.nodeIdCounter++}`;
+      const newNode = {
+        id: nodeId,
+        ...nodeData,
+        x: baseX + index * spacingX,
+        y: baseY + (Math.random() - 0.5) * 60,
+      };
+      state.nodes.push(newNode);
       render();
-      if (index === graphTemplate.nodes.length - 1) {
-        state.edges = graphTemplate.edges.map((edge) => ({ ...edge }));
+
+      if (index === nodeCount - 1) {
+        createEdges();
         render();
-        aiMessages.forEach((message, messageIndex) => {
-          setTimeout(() => addMessage(message.type, message.title, message.html), 280 * (messageIndex + 1));
-        });
+        generateAIInsights(prompt, template);
       }
-    }, index * 170);
+    }, index * 150);
   });
+}
+
+function createEdges() {
+  state.edges = [];
+  for (let i = 0; i < state.nodes.length - 1; i++) {
+    state.edges.push({
+      id: `edge_${i}`,
+      from: state.nodes[i].id,
+      to: state.nodes[i + 1].id,
+      status: state.nodes[i].type === "risk" ? "warning" : "active",
+    });
+  }
+}
+
+function generateAIInsights(prompt, template) {
+  setTimeout(() => {
+    const riskNodeCount = template.nodes.filter(n => n.type === "risk").length;
+    const decisionNodeCount = template.nodes.filter(n => n.type === "decision").length;
+
+    const insights = [];
+
+    if (riskNodeCount > 0) {
+      insights.push(
+        `<p>⚠️ <strong>위험 요소 ${riskNodeCount}개 감지</strong></p>
+        <p>주황색 노드에서 예외 처리, 결제 실패, 보안 검증 등이 필요합니다.</p>
+        <div class='choice-row'>
+          <button onclick="updateNodeType('risk', 'action')">위험도 낮추기</button>
+          <button onclick="showImpactAnalysis()">영향도 분석</button>
+        </div>`
+      );
+    }
+
+    if (decisionNodeCount > 0) {
+      insights.push(
+        `<p>🔀 <strong>분기점 ${decisionNodeCount}개</strong></p>
+        <p>yes/no 또는 조건부 분기를 처리해야 합니다. 각 분기의 후속 단계를 명확히 하세요.</p>`
+      );
+    }
+
+    insights.push(
+      `<p>✅ <strong>플로우 생성 완료</strong></p>
+      <p>하단 채팅창에서 노드 추가/수정, 분기 추가 등을 요청할 수 있습니다.</p>`
+    );
+
+    insights.forEach((html, idx) => {
+      setTimeout(() => addMessage("ai", "Co-pilot", html), idx * 300);
+    });
+  }, 300);
 }
 
 function render() {
@@ -221,18 +320,87 @@ chatForm.addEventListener("submit", (event) => {
   event.preventDefault();
   const prompt = chatInput.value.trim();
   if (!prompt) return;
+
   addMessage("user", "수정 요청", `<p>${escapeHtml(prompt)}</p>`);
   chatInput.value = "";
 
+  if (prompt.startsWith("/add")) {
+    handleAddNode(prompt.replace("/add", "").trim());
+  } else if (prompt.startsWith("/remove")) {
+    handleRemoveNode(prompt.replace("/remove", "").trim());
+  } else if (prompt.startsWith("/analyze")) {
+    showImpactAnalysis();
+  } else {
+    handleGeneralRequest(prompt);
+  }
+});
+
+function handleAddNode(description) {
+  setTimeout(() => {
+    const nodeId = `node_${state.nodeIdCounter++}`;
+    const newNode = {
+      id: nodeId,
+      type: description.includes("확인") ? "decision" : "action",
+      title: description.substring(0, 20),
+      copy: description,
+      meta: `added.${Date.now()}`,
+      x: 400 + Math.random() * 200,
+      y: 200 + Math.random() * 100,
+    };
+    state.nodes.push(newNode);
+    render();
+    addMessage("ai", "노드 추가", `<p>✓ "${description}" 노드가 추가되었습니다.</p>`);
+  }, 300);
+}
+
+function handleRemoveNode(keyword) {
+  setTimeout(() => {
+    const nodeToRemove = state.nodes.find(n => n.title.includes(keyword));
+    if (nodeToRemove) {
+      state.nodes = state.nodes.filter(n => n.id !== nodeToRemove.id);
+      state.edges = state.edges.filter(e => e.from !== nodeToRemove.id && e.to !== nodeToRemove.id);
+      render();
+      addMessage("ai", "노드 제거", `<p>✓ "${keyword}" 관련 노드가 제거되었습니다.</p>`);
+    } else {
+      addMessage("ai", "오류", `<p>해당하는 노드를 찾을 수 없습니다.</p>`);
+    }
+  }, 300);
+}
+
+function handleGeneralRequest(prompt) {
   setTimeout(() => {
     addMessage(
       "ai",
-      "Impact Analysis",
-      "<p>요청한 변경은 결제 정보 등록과 감사 로그에 영향을 줍니다. 미리보기 노드를 추가하고 위험 경로를 주황색으로 표시했습니다.</p><div class='choice-row'><button>미리보기</button><button>적용</button><button>무시</button></div>",
+      "제안",
+      `<p>📝 요청을 이해했습니다: "${prompt}"</p>
+      <p>명령어를 사용하세요:</p>
+      <ul style="margin: 10px 0">
+      <li><code>/add [설명]</code> - 새 노드 추가</li>
+      <li><code>/remove [키워드]</code> - 노드 제거</li>
+      <li><code>/analyze</code> - 영향도 분석</li>
+      </ul>`,
     );
-    impactOverlay.classList.remove("hidden");
-  }, 450);
-});
+  }, 300);
+}
+
+function showImpactAnalysis() {
+  impactOverlay.classList.remove("hidden");
+  addMessage("ai", "Impact Analysis", `
+    <p>📊 변경 영향도 분석:</p>
+    <ul style="margin: 10px 0">
+    <li><strong>높음</strong> ${state.nodes.filter(n => n.type === "risk").length}개 위험 노드</li>
+    <li><strong>중간</strong> ${state.nodes.filter(n => n.type === "decision").length}개 분기점</li>
+    <li><strong>정상</strong> ${state.nodes.filter(n => n.type === "action").length}개 작업</li>
+    </ul>
+  `);
+}
+
+function updateNodeType(fromType, toType) {
+  const nodes = state.nodes.filter(n => n.type === fromType);
+  nodes.forEach(n => n.type = toType);
+  render();
+  addMessage("ai", "노드 업데이트", `<p>✓ ${nodes.length}개 노드의 타입이 변경되었습니다.</p>`);
+}
 
 impactButton.addEventListener("click", () => {
   impactOverlay.classList.toggle("hidden");
@@ -251,3 +419,40 @@ exportButton.addEventListener("click", () => {
     exportDialog.showModal();
   }
 });
+
+exportDialog.addEventListener("submit", (event) => {
+  const format = event.submitter.value;
+  if (format === "json") {
+    downloadJSON();
+  } else if (format === "png") {
+    downloadPNG();
+  } else if (format === "pdf") {
+    downloadPDF();
+  }
+});
+
+function downloadJSON() {
+  const data = {
+    title: projectTitle.textContent,
+    timestamp: new Date().toISOString(),
+    nodes: state.nodes,
+    edges: state.edges,
+  };
+  const json = JSON.stringify(data, null, 2);
+  const blob = new Blob([json], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `flow_${Date.now()}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  addMessage("ai", "Export", `<p>✓ JSON 파일이 다운로드되었습니다.</p>`);
+}
+
+function downloadPNG() {
+  addMessage("ai", "Export", `<p>⚙️ PNG 내보내기는 준비 중입니다. JSON으로 다운로드 후 Figma에서 편집하세요.</p>`);
+}
+
+function downloadPDF() {
+  addMessage("ai", "Export", `<p>⚙️ PDF 내보내기는 준비 중입니다. 현재 JSON 내보내기를 권장합니다.</p>`);
+}

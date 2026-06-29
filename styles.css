@@ -1,21 +1,21 @@
 :root {
   --primary: #00d992;
-  --primary-soft: #2fd6a1;
-  --primary-deep: #10b981;
-  --ink: #101010;
-  --body: #4d5662;
-  --muted: #7b8491;
-  --canvas: #f6f7f9;
-  --canvas-soft: #eef1f4;
-  --panel: #ffffff;
-  --hairline: #d7dce2;
-  --hairline-strong: #b8c0cc;
+  --primary-soft: #33e5a8;
+  --primary-deep: #00b380;
+  --ink: #e8ecf1;
+  --body: #a8b4c1;
+  --muted: #7a8492;
+  --canvas: #0f1217;
+  --canvas-soft: #1a1f27;
+  --panel: #161b23;
+  --hairline: #30363d;
+  --hairline-strong: #444c56;
   --warning: #f59e0b;
-  --danger: #ef4444;
-  --info: #3b82f6;
+  --danger: #ff6b6b;
+  --info: #58a6ff;
   --radius-sm: 6px;
   --radius-md: 8px;
-  --shadow-modal: 0 24px 70px rgba(16, 24, 40, 0.18);
+  --shadow-modal: 0 24px 70px rgba(0, 0, 0, 0.5);
   font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
@@ -314,7 +314,7 @@ textarea {
   width: 180px;
   min-height: 82px;
   padding: 12px 14px;
-  background: rgba(255, 255, 255, 0.96);
+  background: rgba(22, 27, 35, 0.96);
   border: 1px solid var(--hairline);
   border-radius: var(--radius-md);
   transition:
@@ -322,6 +322,7 @@ textarea {
     opacity 220ms ease,
     border-color 180ms ease;
   animation: nodeIn 260ms ease both;
+  backdrop-filter: blur(8px);
 }
 
 .node.dragging {
@@ -395,8 +396,9 @@ textarea {
   height: 76px;
   border: 1px solid var(--hairline);
   border-radius: var(--radius-sm);
-  background: rgba(255, 255, 255, 0.86);
+  background: rgba(22, 27, 35, 0.86);
   padding: 12px;
+  backdrop-filter: blur(8px);
 }
 
 .mini-map span {
@@ -473,8 +475,8 @@ textarea {
 }
 
 .copilot-tabs button.active {
-  background: var(--canvas-soft);
-  color: var(--ink);
+  background: rgba(0, 217, 146, 0.1);
+  color: var(--primary);
 }
 
 .message-list {
@@ -498,7 +500,8 @@ textarea {
 
 .message.user {
   justify-self: end;
-  background: var(--canvas-soft);
+  background: rgba(0, 217, 146, 0.08);
+  border-color: rgba(0, 217, 146, 0.2);
 }
 
 .message-title {
