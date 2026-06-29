@@ -1,0 +1,1063 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>안영선 · 서비스 기획자</title>
+  <meta name="description" content="디자인 백그라운드를 가진 서비스 기획자 안영선의 포트폴리오입니다." />
+
+  <style>
+    /* ─── Paperlogy (눈누) ─── */
+    @font-face {
+      font-family: 'Paperlogy';
+      src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/2408-3@1.0/Paperlogy-4Regular.woff2') format('woff2');
+      font-weight: 400;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: 'Paperlogy';
+      src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/2408-3@1.0/Paperlogy-8ExtraBold.woff2') format('woff2');
+      font-weight: 800;
+      font-style: normal;
+    }
+
+    /* ─── Reset & Root ─── */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg:            #1a1a1a;
+      --bg-card:       rgba(255, 255, 255, 0.04);
+      --white:         #ffffff;
+      --glass-bg:      rgba(255, 255, 255, 0.05);
+      --glass-dark:    rgba(20, 20, 26, 0.72);
+      --border:        rgba(255, 255, 255, 0.10);
+      --border-glass:  rgba(255, 255, 255, 0.07);
+      --text-primary:  #ffffff;
+      --text-sub:      rgba(255, 255, 255, 0.68);
+      --text-muted:    rgba(255, 255, 255, 0.38);
+      --font:          'Paperlogy', sans-serif;
+
+      --purple-glow:   rgba(126, 87, 194, 0.15);
+      --purple-glow-2: rgba(100, 55, 180, 0.11);
+      --purple-grad:   linear-gradient(135deg,
+                         rgba(190, 150, 255, 0.85) 0%,
+                         rgba(126,  87, 194, 0.55) 50%,
+                         rgba(210, 180, 255, 0.35) 100%);
+      --purple-tint:   #d4b8ff;
+      --purple-active: #c9a8ff;
+    }
+
+    html { font-size: 16px; scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      font-family: var(--font);
+      overflow-x: hidden;
+      color: var(--text-primary);
+    }
+
+    body::before,
+    /* ── Mouse-tracking spotlight ── */
+    .cursor-glow {
+      position: fixed;
+      top: -300px;
+      left: -300px;
+      width: 600px;
+      height: 600px;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 0;
+      background: radial-gradient(circle,
+        rgba(180, 130, 255, 0.22) 0%,
+        rgba(140,  90, 220, 0.10) 40%,
+        transparent 70%);
+      filter: blur(90px);
+    }
+
+    /* ════════════════════════════════════════
+       INTRO — Sticky blind zone
+    ════════════════════════════════════════ */
+    #introSpacer {
+      height: 250dvh;          /* 스크롤 공간: 150dvh 블라인드 + 100dvh 여유 */
+      position: relative;
+      z-index: 1;
+    }
+
+    .intro-wrapper {
+      position: sticky;
+      top: 0;
+      width: 100%;
+      height: 100dvh;
+      overflow: hidden;
+    }
+
+    .intro-section {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg);
+      z-index: 1;
+    }
+
+    @keyframes heroEnter {
+      from { opacity: 0; transform: translateY(48px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .hero-tag {
+      font-size: clamp(0.55rem, 1.1vw, 0.72rem);
+      font-weight: 400;
+      letter-spacing: 0.52em;
+      text-transform: uppercase;
+      color: var(--purple-tint);
+      margin-bottom: clamp(0.75rem, 2vw, 1.25rem);
+      user-select: none;
+      animation: heroEnter 0.9s cubic-bezier(0.215, 0.61, 0.355, 1) 0.2s both;
+    }
+
+    .hero-text {
+      font-size: clamp(3.2rem, 15vw, 13rem);
+      font-weight: 800;
+      color: var(--white);
+      letter-spacing: -0.03em;
+      line-height: 0.95;
+      text-align: center;
+      user-select: none;
+      animation: heroEnter 1.0s cubic-bezier(0.215, 0.61, 0.355, 1) 0.92s both;
+    }
+
+    .blind-container {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    .blind {
+      position: absolute;
+      width: 100%;
+      left: 0;
+      overflow: hidden;
+      transform: scaleY(0);
+      transform-origin: top;
+      will-change: transform;
+    }
+
+    .blind-content {
+      width: 100%;
+      height: 100%;
+      background: var(--glass-bg);
+      backdrop-filter: blur(15px) saturate(150%);
+      -webkit-backdrop-filter: blur(15px) saturate(150%);
+      border-bottom: 1px solid var(--border-glass);
+    }
+
+    .about-overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: clamp(2rem, 6vw, 4rem) clamp(1.5rem, 8vw, 6rem);
+      opacity: 0;
+      pointer-events: none;
+      text-align: center;
+    }
+
+    .about-overlay.is-active { pointer-events: auto; }
+
+    .section-eyebrow {
+      font-size: clamp(0.58rem, 1.1vw, 0.65rem);
+      font-weight: 400;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 1.4rem;
+    }
+
+    .about-title {
+      font-size: clamp(1.25rem, 3vw, 2.1rem);
+      font-weight: 800;
+      line-height: 1.45;
+      color: var(--text-primary);
+      max-width: 680px;
+      margin-bottom: 2.25rem;
+    }
+
+    .skills-list {
+      list-style: none;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.55rem;
+      justify-content: center;
+      max-width: 580px;
+    }
+
+    .skill-chip {
+      padding: 0.42rem 1rem;
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      font-size: clamp(0.66rem, 1.1vw, 0.78rem);
+      font-weight: 400;
+      color: var(--text-sub);
+      background: rgba(255, 255, 255, 0.06);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+    }
+
+    .about-scroll-hint {
+      margin-top: 2.5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--text-muted);
+      font-size: 0.58rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+    }
+
+    .about-scroll-hint-bar {
+      width: 1px;
+      height: 28px;
+      background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.25));
+      animation: pulse-bar 1.6s ease-in-out infinite;
+    }
+
+    /* ════════════════════════════════════════
+       MAIN CONTENT
+    ════════════════════════════════════════ */
+    .main-content {
+      width: 100%;
+      position: relative;
+      z-index: 2;              /* sticky 히어로 위로 슬라이드 */
+      background: var(--bg);   /* 히어로를 완전히 덮기 위해 필수 */
+    }
+
+    /* ── Act Sections ── */
+    .act-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: clamp(5rem, 10vw, 8rem) clamp(1.5rem, 6vw, 4rem);
+    }
+
+    .act-section--primary {
+      min-height: 100dvh;
+      justify-content: center;
+    }
+
+    .act-section--secondary {
+      border-top: 1px solid var(--border);
+    }
+
+    .act-number {
+      font-size: clamp(0.56rem, 0.9vw, 0.63rem);
+      font-weight: 400;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 0.6rem;
+      text-align: center;
+    }
+
+    .act-eyebrow {
+      font-size: clamp(0.58rem, 1.1vw, 0.65rem);
+      font-weight: 400;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--purple-tint);
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+
+    .act-heading {
+      font-size: clamp(1.1rem, 2.5vw, 1.6rem);
+      font-weight: 800;
+      color: var(--text-sub);
+      text-align: center;
+      margin-bottom: 0.75rem;
+      white-space: pre-line;
+    }
+
+    .act-sub {
+      font-size: clamp(0.75rem, 1.3vw, 0.88rem);
+      font-weight: 400;
+      color: var(--text-muted);
+      text-align: center;
+      max-width: 480px;
+      line-height: 1.75;
+      margin-bottom: clamp(2.5rem, 5vw, 4rem);
+    }
+
+    /* ── Project Cards ── */
+    .act-cards {
+      display: grid;
+      gap: clamp(1rem, 2.5vw, 1.75rem);
+      width: 100%;
+    }
+
+    .act-cards--2 { grid-template-columns: 1fr 1fr; max-width: 820px; }
+    .act-cards--3 { grid-template-columns: repeat(3, 1fr); max-width: 1100px; }
+
+    .project-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: clamp(1.75rem, 4vw, 2.5rem);
+      cursor: pointer;
+      transition: background 0.28s ease, border-color 0.28s ease, transform 0.28s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      position: relative;
+    }
+
+    /* Gradient border on hover */
+    .project-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 18px;
+      padding: 1px;
+      background: var(--purple-grad);
+      -webkit-mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+      mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+      -webkit-mask-composite: destination-out;
+      mask-composite: exclude;
+      opacity: 0;
+      transition: opacity 0.28s ease;
+      pointer-events: none;
+    }
+
+    .project-card:hover {
+      background: rgba(126, 87, 194, 0.07);
+      border-color: transparent;
+      transform: translateY(-5px);
+    }
+
+    .project-card:hover::before { opacity: 1; }
+
+    .card-label {
+      font-size: clamp(0.56rem, 0.9vw, 0.63rem);
+      font-weight: 400;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .card-title {
+      font-size: clamp(1rem, 2vw, 1.3rem);
+      font-weight: 800;
+      line-height: 1.35;
+      color: var(--white);
+    }
+
+    .card-desc {
+      font-size: clamp(0.72rem, 1.2vw, 0.83rem);
+      font-weight: 400;
+      line-height: 1.65;
+      color: var(--text-sub);
+    }
+
+    .card-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+      margin-top: 0.15rem;
+    }
+
+    .card-chip {
+      padding: 0.22rem 0.65rem;
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      font-size: clamp(0.58rem, 0.88vw, 0.65rem);
+      color: var(--text-muted);
+    }
+
+    .card-result {
+      margin-top: 0.15rem;
+      padding: 0.55rem 0.85rem;
+      background: rgba(126, 87, 194, 0.08);
+      border: 1px solid rgba(126, 87, 194, 0.18);
+      border-radius: 8px;
+      font-size: clamp(0.63rem, 1vw, 0.72rem);
+      color: var(--purple-tint);
+      line-height: 1.55;
+    }
+
+    .card-cta {
+      margin-top: auto;
+      padding-top: 0.75rem;
+      font-size: clamp(0.68rem, 1.1vw, 0.78rem);
+      font-weight: 400;
+      color: var(--text-muted);
+      transition: color 0.25s ease;
+    }
+
+    .project-card:hover .card-cta { color: var(--purple-active); }
+
+    /* ── Contact Section ── */
+    .contact-section {
+      min-height: 60dvh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: clamp(4rem, 8vw, 7rem) clamp(1.5rem, 6vw, 4rem);
+      text-align: center;
+      border-top: 1px solid var(--border);
+    }
+
+    .contact-eyebrow {
+      font-size: clamp(0.58rem, 1.1vw, 0.65rem);
+      font-weight: 400;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 1.25rem;
+    }
+
+    .contact-heading {
+      font-size: clamp(1.6rem, 4vw, 3rem);
+      font-weight: 800;
+      color: var(--white);
+      margin-bottom: 1rem;
+      line-height: 1.2;
+    }
+
+    .contact-sub {
+      font-size: clamp(0.82rem, 1.4vw, 0.95rem);
+      color: var(--text-sub);
+      margin-bottom: 2.5rem;
+      line-height: 1.7;
+      max-width: 400px;
+    }
+
+    .contact-email {
+      display: inline-block;
+      font-size: clamp(0.9rem, 1.6vw, 1.1rem);
+      font-weight: 400;
+      color: var(--purple-tint);
+      text-decoration: none;
+      border-bottom: 1px solid rgba(212, 184, 255, 0.3);
+      padding-bottom: 3px;
+      transition: border-color 0.2s, color 0.2s;
+      letter-spacing: 0.02em;
+    }
+
+    .contact-email:hover {
+      color: var(--white);
+      border-color: rgba(255, 255, 255, 0.4);
+    }
+
+    /* ════════════════════════════════════════
+       DETAIL OVERLAY
+    ════════════════════════════════════════ */
+    .detail-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      background: var(--bg);
+      opacity: 0;
+      visibility: hidden;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .detail-context {
+      position: sticky;
+      top: 0;
+      z-index: 110;
+      width: 100%;
+      background: var(--glass-dark);
+      backdrop-filter: blur(15px) saturate(160%);
+      -webkit-backdrop-filter: blur(15px) saturate(160%);
+      border-bottom: 1px solid var(--border-glass);
+      padding: 1rem clamp(1.5rem, 6vw, 4rem);
+      font-size: clamp(0.56rem, 0.9vw, 0.63rem);
+      font-weight: 400;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .back-btn {
+      position: fixed;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 120;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.6rem 1.3rem;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      color: var(--text-sub);
+      font-family: var(--font);
+      font-size: 0.78rem;
+      font-weight: 400;
+      letter-spacing: 0.04em;
+      cursor: pointer;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      transition: background 0.2s, color 0.2s;
+      white-space: nowrap;
+    }
+
+    .back-btn:hover {
+      background: rgba(255, 255, 255, 0.14);
+      color: var(--white);
+    }
+
+    .project-content {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: clamp(3rem, 7vw, 5rem) clamp(1.5rem, 6vw, 4rem) clamp(6rem, 12vw, 9rem);
+    }
+
+    .project-label {
+      font-size: clamp(0.56rem, 0.9vw, 0.63rem);
+      font-weight: 400;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 0.75rem;
+    }
+
+    .project-title {
+      font-size: clamp(1.6rem, 4vw, 3rem);
+      font-weight: 800;
+      line-height: 1.2;
+      color: var(--white);
+      margin-bottom: 1.25rem;
+    }
+
+    .project-summary {
+      font-size: clamp(0.82rem, 1.4vw, 1rem);
+      font-weight: 400;
+      line-height: 1.8;
+      color: var(--text-sub);
+      max-width: 600px;
+      margin-bottom: 1.5rem;
+    }
+
+    .project-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .project-tag-chip {
+      padding: 0.32rem 0.85rem;
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      font-size: clamp(0.65rem, 1vw, 0.73rem);
+      color: var(--text-muted);
+    }
+
+    .project-result {
+      padding: 1rem 1.25rem;
+      background: rgba(126, 87, 194, 0.08);
+      border: 1px solid rgba(126, 87, 194, 0.2);
+      border-radius: 12px;
+      font-size: clamp(0.78rem, 1.3vw, 0.9rem);
+      color: var(--purple-tint);
+      line-height: 1.65;
+      margin-bottom: 3rem;
+    }
+
+    .project-result-label {
+      display: block;
+      font-size: clamp(0.56rem, 0.88vw, 0.63rem);
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--purple-active);
+      margin-bottom: 0.45rem;
+      font-weight: 400;
+    }
+
+    .mockup-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: clamp(0.75rem, 1.5vw, 1rem);
+    }
+
+    .mockup-block {
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border);
+    }
+
+    .mockup-block.span-2 { grid-column: 1 / -1; aspect-ratio: 16 / 5; }
+    .mockup-block.tall   { aspect-ratio: 3 / 4; }
+    .mockup-block.square { aspect-ratio: 1 / 1; }
+
+    .mockup-block img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 12px;
+      display: block;
+    }
+
+    /* ════════════════════════════════════════
+       UTILITIES
+    ════════════════════════════════════════ */
+    .anim-up {
+      opacity: 0;
+      transform: translateY(32px);
+    }
+
+    .scroll-hint {
+      position: fixed;
+      bottom: 1.75rem;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 200;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.45rem;
+      pointer-events: none;
+    }
+
+    .scroll-hint-label {
+      font-size: 0.56rem;
+      font-weight: 400;
+      letter-spacing: 0.26em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .scroll-hint-bar {
+      width: 1px;
+      height: 34px;
+      background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.28));
+      animation: pulse-bar 1.6s ease-in-out infinite;
+    }
+
+    @keyframes pulse-bar {
+      0%, 100% { opacity: 0.25; transform: scaleY(0.75); transform-origin: top; }
+      55%       { opacity: 1;    transform: scaleY(1);    transform-origin: top; }
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 4.5rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(12px);
+      z-index: 500;
+      background: rgba(255, 255, 255, 0.10);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 10px;
+      color: var(--white);
+      font-size: 0.82rem;
+      font-weight: 400;
+      padding: 0.7rem 1.4rem;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+
+    .toast.visible {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* ─── Responsive ─── */
+    @media (max-width: 900px) {
+      .act-cards--3 { grid-template-columns: 1fr 1fr; max-width: 640px; }
+    }
+
+    @media (max-width: 640px) {
+      .act-cards--2,
+      .act-cards--3  { grid-template-columns: 1fr; max-width: 460px; }
+      .mockup-grid   { grid-template-columns: 1fr; }
+      .mockup-block.span-2 { grid-column: 1; aspect-ratio: 16 / 7; }
+    }
+
+    @media (max-width: 380px) {
+      .hero-text { letter-spacing: -0.04em; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ══ INTRO ══ -->
+  <div id="introSpacer">
+    <div class="intro-wrapper" id="introWrapper">
+
+      <section class="intro-section">
+        <p class="hero-tag">[ Service Planner ]</p>
+        <h1 class="hero-text">BUILD THE FLOW.</h1>
+      </section>
+
+      <div class="blind-container" id="blindContainer"></div>
+
+    </div>
+  </div>
+
+  <!-- ══ MAIN CONTENT ══ -->
+  <main class="main-content" id="mainContent">
+    <section class="act-section act-section--primary" id="act1Section"></section>
+    <section class="act-section act-section--secondary" id="act2Section"></section>
+    <section class="contact-section" id="contactSection"></section>
+  </main>
+
+  <!-- ══ DETAIL OVERLAY ══ -->
+  <div class="detail-overlay" id="detailOverlay">
+    <div class="detail-context" id="detailContext"></div>
+    <div class="project-content" id="projectContent"></div>
+    <button class="back-btn" id="backBtn">← 돌아가기</button>
+  </div>
+
+  <!-- 마우스 트래킹 스포트라이트 -->
+  <div class="cursor-glow" id="cursorGlow"></div>
+
+  <div id="toast" class="toast"></div>
+
+  <div class="scroll-hint" id="scrollHint">
+    <span class="scroll-hint-label">Scroll</span>
+    <div class="scroll-hint-bar"></div>
+  </div>
+
+  <!-- ══ Scripts ══ -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+  <script>
+    gsap.registerPlugin(ScrollTrigger);
+
+    /* ─────────────────────────────────────
+       DATA
+    ───────────────────────────────────── */
+    const portfolioData = {
+      about: {
+        title: "디자인에서 기획으로, 화면의 디테일과 서비스 전체 구조를 동시에 설계합니다",
+        skills: ["Figma", "서비스 기획", "UI/UX 설계", "Jira · Confluence", "ProtoPie", "HTML · CSS"]
+      },
+      acts: {
+        act1: {
+          number: "01",
+          eyebrow: "현재 — AI · 시스템 기획",
+          heading: "구조와 시스템을\n기획합니다",
+          sub: "복잡한 정책과 데이터를 직관적인 흐름으로 풀어내는 시스템 설계",
+          projects: [
+            {
+              id: "mayai",
+              actLabel: "01 — AI · 시스템 기획",
+              label: "병원 마케팅 AICC B2B SaaS",
+              name: "MayAI",
+              desc: "콜봇·챗봇 시나리오부터 상담원 어시스턴트까지, 병원 유실콜 제로화를 위한 AI 응대 관리 서비스",
+              tags: ["AICC", "B2B SaaS", "시나리오 설계", "AI 지식베이스", "상담 품질 평가"],
+              result: "병원 상담원 맞춤형 인터페이스 설계로 업무 자동화 및 유실콜 제로화 달성",
+              summary: "24시간 병원 유실콜 제거를 목표로 콜봇·챗봇 상담 시나리오, AI 지식베이스 관리 구조, 상담원 어시스턴트, 상담 품질 평가 서비스를 총괄 기획하였습니다. 카카오 챗봇 연동 및 통합 서비스 라인업(메이데스크, 메이팅, 메이플, 메이리뷰)의 정책 수립과 화면설계서를 담당하였습니다.",
+              images: ["images/mayai-01.svg", "images/mayai-02.svg", "images/mayai-03.svg"]
+            },
+            {
+              id: "diworks",
+              actLabel: "01 — AI · 시스템 기획",
+              label: "Agentic AI · 온톨로지 기반 프로젝트 관리 SaaS",
+              name: "디웍스",
+              desc: "국내 중소 SI 기업의 관리 오버헤드·지식 증발·인력 배정 실패를 해결하는 프로젝트 전주기 관리 서비스",
+              tags: ["온톨로지", "Agentic AI", "WBS 자동화", "인력 추천", "B2B SaaS"],
+              result: "문서 기반 자동 WBS 생성 구조 설계 · 온톨로지 기반 인력 추천 기획",
+              summary: "국내 중소 SI 기업이 겪는 관리 오버헤드, 지식 증발, 인력 배정 실패 문제를 해결하는 B2B SaaS를 기획하였습니다. 온톨로지 구조 기획, 문서 기반 자동 WBS 생성, 온톨로지 기반 인력 추천 시스템 설계, 서비스 화면 기획 및 유저 플로우 구조 설계를 담당하였습니다.",
+              images: ["images/diworks-01.svg", "images/diworks-02.svg", "images/diworks-03.svg"]
+            }
+          ]
+        },
+        act2: {
+          number: "02",
+          eyebrow: "UX 설계 — 사용자 여정",
+          heading: "사용자의 페인포인트를\n풀어냅니다",
+          sub: "디자인 백그라운드가 만들어준 직관으로, 유저 시나리오부터 화면설계까지",
+          projects: [
+            {
+              id: "tadang",
+              actLabel: "02 — UX 설계",
+              label: "B2C 차량 구매 앱",
+              name: "타당",
+              desc: "비대면 차량 비교 견적 프로세스를 자동화한 올인원 서비스. 복잡한 심사·계약·가격비교를 한 번에",
+              tags: ["B2C 앱", "UX 기획", "프로세스 자동화", "OCR", "스크래핑"],
+              result: "앱 런칭 초기 내부 사용자 사용 편의성 80% 개선 피드백 확보",
+              summary: "20개 금융사와의 협업으로 실시간 가격비교, 네이버 OCR 신분증 인증, 스크래핑 기반 서류 자동화를 구현한 차량 구매 올인원 앱을 기획하였습니다. 전체 사용자 여정 기획, 기능명세서, 사용자 흐름도, 서비스 정책, 화면설계서를 담당하였습니다.",
+              images: ["images/tadang-01.svg", "images/tadang-02.svg", "images/tadang-03.svg"]
+            },
+            {
+              id: "tadang-biz",
+              actLabel: "02 — UX 설계",
+              label: "B2B 딜러 플랫폼 웹 서비스",
+              name: "타당비즈니스",
+              desc: "B2B 파트너사의 견적 요청·관리 프로세스 구조화. 직관적인 DB 구매 환경과 데이터 기반 리포트 설계",
+              tags: ["B2B 웹", "IA 설계", "정책 수립", "어드민"],
+              result: "파트너사 접근성 강화 · 관리자 정책 및 사용자 접근 레벨 체계화",
+              summary: "B2B 파트너사의 견적 요청·관리 프로세스를 구조화하고, 직관적인 DB 구매 환경과 데이터 기반 결과 리포트 제공 구조를 설계하였습니다. 디자인뿐 아니라 관리자 정책, 사용자 접근 레벨 기획 등 서비스 운영에 필요한 정책 설계를 포함하였습니다.",
+              images: ["images/tadang-biz-01.svg", "images/tadang-biz-02.svg", "images/tadang-biz-03.svg"]
+            },
+            {
+              id: "uppercent",
+              actLabel: "02 — UX 설계",
+              label: "웹 기반 공급자 관리 시스템",
+              name: "업퍼센트",
+              desc: "공급자 중심 견적 관리 시스템 기획 및 시각화 대시보드 구성. 사용자 흐름의 병목구간 제거",
+              tags: ["어드민 시스템", "대시보드", "UX 개선", "B2B"],
+              result: "유입 동선 단순화 · 병목구간 제거로 운영 효율성 개선",
+              summary: "공급자(딜러) 중심의 견적 관리 시스템과 시각화 대시보드를 기획하였습니다. 사용자 흐름의 병목구간을 제거하기 위한 유입 동선 단순화 및 UI 개선 기획을 수행하였습니다.",
+              images: ["images/uppercent-01.svg", "images/uppercent-02.svg", "images/uppercent-03.svg"]
+            }
+          ]
+        }
+      }
+    };
+
+    /* ─────────────────────────────────────
+       RENDER: Act Sections
+    ───────────────────────────────────── */
+    function renderAct(sectionEl, actData) {
+      const colClass = actData.projects.length === 2 ? 'act-cards--2' : 'act-cards--3';
+      sectionEl.innerHTML = `
+        <p class="act-number anim-up">${actData.number}</p>
+        <p class="act-eyebrow anim-up">${actData.eyebrow}</p>
+        <h2 class="act-heading anim-up">${actData.heading}</h2>
+        <p class="act-sub anim-up">${actData.sub}</p>
+        <div class="act-cards ${colClass} anim-up">
+          ${actData.projects.map(p => `
+            <div class="project-card" data-project-id="${p.id}">
+              <span class="card-label">${p.label}</span>
+              <h3 class="card-title">${p.name}</h3>
+              <p class="card-desc">${p.desc}</p>
+              <div class="card-chips">
+                ${p.tags.map(t => `<span class="card-chip">${t}</span>`).join('')}
+              </div>
+              <div class="card-result">${p.result}</div>
+              <span class="card-cta">자세히 보기 →</span>
+            </div>
+          `).join('')}
+        </div>
+      `;
+    }
+
+    /* ─────────────────────────────────────
+       RENDER: Contact Section
+    ───────────────────────────────────── */
+    function renderContact() {
+      const el = document.getElementById('contactSection');
+      /* 이메일 주소를 아래에 입력하세요 */
+      const email = 'dksdudtjs93@gmail.com';
+      el.innerHTML = `
+        <p class="contact-eyebrow anim-up">Contact</p>
+        <h2 class="contact-heading anim-up">함께 일하고 싶으시다면</h2>
+        <p class="contact-sub anim-up">새로운 기회와 협업 제안을 언제든 환영합니다</p>
+        <a class="contact-email anim-up" href="mailto:${email}">${email}</a>
+      `;
+    }
+
+    const act1Section = document.getElementById('act1Section');
+    const act2Section = document.getElementById('act2Section');
+
+    renderAct(act1Section, portfolioData.acts.act1);
+    renderAct(act2Section, portfolioData.acts.act2);
+    renderContact();
+
+    /* ─────────────────────────────────────
+       SCROLL ENTRANCE ANIMATIONS
+    ───────────────────────────────────── */
+    document.querySelectorAll('.anim-up').forEach(el => {
+      gsap.fromTo(el,
+        { opacity: 0, y: 32 },
+        {
+          opacity: 1, y: 0,
+          duration: 0.75,
+          ease: 'power2.out',
+          scrollTrigger: { trigger: el, start: 'top 85%', toggleActions: 'play none none none' }
+        }
+      );
+    });
+
+    /* ─────────────────────────────────────
+       BUILD BLIND STRIPS
+    ───────────────────────────────────── */
+    const NUM_BLINDS     = 14;
+    const blindContainer = document.getElementById('blindContainer');
+
+    for (let i = 0; i < NUM_BLINDS; i++) {
+      const blind = document.createElement('div');
+      blind.className = 'blind';
+      blind.style.top    = `${(i / NUM_BLINDS) * 100}%`;
+      blind.style.height = `${100 / NUM_BLINDS}%`;
+      const content = document.createElement('div');
+      content.className = 'blind-content';
+      blind.appendChild(content);
+      blindContainer.appendChild(blind);
+    }
+
+    const blinds     = document.querySelectorAll('.blind');
+    const heroText   = document.querySelector('.hero-text');
+    const heroTag    = document.querySelector('.hero-tag');
+    const scrollHint = document.getElementById('scrollHint');
+
+    /* ─────────────────────────────────────
+       MOUSE-TRACKING SPOTLIGHT
+       quickTo로 부드럽게 커서를 따라감
+    ───────────────────────────────────── */
+    const cursorGlow = document.getElementById('cursorGlow');
+    const glowXTo = gsap.quickTo(cursorGlow, 'x', { duration: 0.55, ease: 'power2.out' });
+    const glowYTo = gsap.quickTo(cursorGlow, 'y', { duration: 0.55, ease: 'power2.out' });
+
+    window.addEventListener('mousemove', e => {
+      glowXTo(e.clientX);
+      glowYTo(e.clientY);
+    });
+
+    /* ─────────────────────────────────────
+       INTRO TIMELINE (sticky + scrub)
+       pin 없이 CSS sticky로 히어로 고정.
+       스크롤 0 → 150dvh: 블라인드 닫힘
+       스크롤 150dvh → 250dvh: 메인 콘텐츠(z-index:2)가 위로 슬라이드
+    ───────────────────────────────────── */
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: '#introSpacer',
+        start:   'top top',
+        end:     () => `+=${window.innerHeight * 1.5}`,
+        scrub:   1.2,
+        onUpdate(self) {
+          gsap.set(scrollHint, { opacity: Math.max(0, 1 - self.progress * 6) });
+        },
+      }
+    });
+
+    /* 히어로 텍스트 페이드 아웃 + 블라인드 닫힘 동시 진행 */
+    tl.fromTo([heroText, heroTag],
+      { opacity: 1 },
+      { opacity: 0, ease: 'none', duration: 0.35 }
+    );
+    tl.fromTo(blinds,
+      { scaleY: 0 },
+      {
+        scaleY: 1,
+        transformOrigin: 'top',
+        ease: 'none',
+        stagger: { each: 0.055, ease: 'none' },
+        duration: 1,
+      },
+      '<'
+    );
+
+    /* ─────────────────────────────────────
+       PROJECT LOOKUP
+    ───────────────────────────────────── */
+    const allProjects = Object.values(portfolioData.acts)
+      .flatMap(act => act.projects);
+
+    function findProject(id) {
+      return allProjects.find(p => p.id === id);
+    }
+
+    /* ─────────────────────────────────────
+       DETAIL OVERLAY
+    ───────────────────────────────────── */
+    const mainContent    = document.getElementById('mainContent');
+    const detailOverlay  = document.getElementById('detailOverlay');
+    const detailContext  = document.getElementById('detailContext');
+    const projectContent = document.getElementById('projectContent');
+    const backBtn        = document.getElementById('backBtn');
+
+    let savedScrollY = 0;
+
+    function closeProject() {
+      gsap.to(detailOverlay, {
+        opacity: 0, duration: 0.35, ease: 'power1.in',
+        onComplete() {
+          detailOverlay.style.visibility = 'hidden';
+          mainContent.style.visibility = 'visible';
+          window.scrollTo(0, savedScrollY);
+          gsap.to(mainContent, { opacity: 1, duration: 0.4, ease: 'power1.out' });
+        }
+      });
+    }
+
+    function imgBlock(cls, src) {
+      return src
+        ? `<div class="mockup-block ${cls}"><img src="${src}" alt="" loading="lazy"></div>`
+        : `<div class="mockup-block ${cls}"></div>`;
+    }
+
+    function openProject(project) {
+      savedScrollY = window.scrollY;
+      history.pushState({ projectOpen: true }, '');
+
+      const imgs = project.images || [];
+      detailContext.textContent = project.actLabel;
+      projectContent.innerHTML = `
+        <p class="project-label">${project.label}</p>
+        <h2 class="project-title">${project.name}</h2>
+        <p class="project-summary">${project.summary}</p>
+        <div class="project-tags">
+          ${project.tags.map(t => `<span class="project-tag-chip">${t}</span>`).join('')}
+        </div>
+        <div class="project-result">
+          <span class="project-result-label">성과 · Impact</span>
+          ${project.result}
+        </div>
+        <div class="mockup-grid">
+          ${imgBlock('span-2', imgs[0])}
+          ${imgBlock('tall',   imgs[1])}
+          ${imgBlock('tall',   imgs[2])}
+        </div>
+      `;
+
+      gsap.to(mainContent, {
+        opacity: 0, duration: 0.35, ease: 'power1.in',
+        onComplete() {
+          mainContent.style.visibility = 'hidden';
+          detailOverlay.style.visibility = 'visible';
+          detailOverlay.scrollTop = 0;
+          gsap.fromTo(detailOverlay, { opacity: 0 }, { opacity: 1, duration: 0.4, ease: 'power1.out' });
+          gsap.fromTo(projectContent,
+            { opacity: 0, y: 20 },
+            { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out', delay: 0.2 }
+          );
+        }
+      });
+    }
+
+    /* Card click */
+    document.addEventListener('click', e => {
+      const card = e.target.closest('.project-card');
+      if (!card) return;
+      const project = findProject(card.dataset.projectId);
+      if (project) openProject(project);
+    });
+
+    /* 뒤로가기 버튼 & 브라우저 back 모두 closeProject() 공유 */
+    backBtn.addEventListener('click', () => {
+      history.back();  /* popstate → closeProject() 트리거 */
+    });
+
+    window.addEventListener('popstate', () => {
+      if (detailOverlay.style.visibility === 'visible') {
+        closeProject();
+      }
+    });
+  </script>
+
+</body>
+</html>

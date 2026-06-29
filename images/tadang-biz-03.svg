@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="800" viewBox="0 0 600 800">
+  <rect width="600" height="800" fill="#232323"/>
+  <rect x="30" y="30" width="540" height="740" rx="12" fill="#2a2a2a" stroke="#333" stroke-width="1"/>
+  <text x="300" y="380" font-family="sans-serif" font-size="22" fill="#555" text-anchor="middle">타당비즈니스 — 추가 화면</text>
+  <text x="300" y="420" font-family="sans-serif" font-size="16" fill="#444" text-anchor="middle">tadang-biz-03  ·  600 × 800</text>
+</svg>
